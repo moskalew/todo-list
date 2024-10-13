@@ -1,5 +1,5 @@
 {
-  "homepage": "https://moskalew.github.io/todo-list",
+  "homepage": "https://github.com/moskalew/todo-list",
   "name": "todo-list",
   "version": "0.1.0",
   "private": true,
@@ -7,6 +7,7 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "firebase": "^10.14.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-scripts": "5.0.1",
@@ -40,6 +41,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "gh-pages": "^6.2.0",
     "json-server": "^1.0.0-beta.3"
   }

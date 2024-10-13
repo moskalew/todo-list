@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styles from './TodoList.module.css';
+import { ref, onValue, set, remove, update } from 'firebase/database';
+import { db } from './firebase';
 
 const debounce = (func, delay) => {
   let timeoutId;
@@ -13,38 +15,35 @@ const debounce = (func, delay) => {
 
 export const TodoList = () => {
   const [todos, setTodos] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [newTodo, setNewTodo] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [isSorted, setIsSorted] = useState(false);
-  const [refreshTodosFlag, setRefreshTodosFlag] = useState(false);
-
-  const refreshTodos = () => {
-    setRefreshTodosFlag((prev) => !prev);
-  };
 
   useEffect(() => {
-    setIsLoading(true);
-    fetch('http://localhost:5000/todos')
-      .then((response) => response.json())
-      .then((loadedTodos) => {
-        setTodos(loadedTodos);
-        setIsLoading(false);
-      });
-  }, [refreshTodosFlag]);
+    const todoListDbRef = ref(db, 'todos');
+
+    const unsubscribe = onValue(todoListDbRef, (snapshot) => {
+      const loadedTodos = snapshot.val();
+      const todosArray = loadedTodos
+        ? Object.entries(loadedTodos).map(([id, todo]) => ({ id, ...todo }))
+        : [];
+      setTodos(todosArray);
+      setIsLoading(false);
+    });
+
+    // Clean up subscription on unmount
+    return () => unsubscribe();
+  }, []);
 
   const addTodo = () => {
+    if (!newTodo.trim()) return; // Проверка на пустую задачу
     setIsCreating(true);
-    fetch('http://localhost:5000/todos', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: newTodo, completed: false }),
-    })
-      .then((response) => response.json())
+    const newTodoRef = ref(db, `todos/${Date.now()}`);
+    set(newTodoRef, { title: newTodo, completed: false })
       .then(() => {
-        refreshTodos();
         setNewTodo('');
       })
       .finally(() => setIsCreating(false));
@@ -52,24 +51,14 @@ export const TodoList = () => {
 
   const deleteTodo = (id) => {
     setIsDeleting(true);
-    fetch(`http://localhost:5000/todos/${id}`, {
-      method: 'DELETE',
-    })
-      .then(() => {
-        refreshTodos();
-      })
-      .finally(() => setIsDeleting(false));
+    const todoRef = ref(db, `todos/${id}`);
+    remove(todoRef).finally(() => setIsDeleting(false));
   };
 
   const toggleComplete = (id) => {
     const todo = todos.find((todo) => todo.id === id);
-    fetch(`http://localhost:5000/todos/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...todo, completed: !todo.completed }),
-    }).then(() => {
-      refreshTodos();
-    });
+    const todoRef = ref(db, `todos/${id}`);
+    update(todoRef, { completed: !todo.completed }).then(() => {});
   };
 
   const handleSearch = (event) => {
