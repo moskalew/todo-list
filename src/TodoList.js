@@ -1,50 +1,145 @@
 import React, { useEffect, useState } from 'react';
-import './TodoList.css';
+import styles from './TodoList.module.css';
 
-const TodoList = () => {
+const debounce = (func, delay) => {
+  let timeoutId;
+  return (...args) => {
+    if (timeoutId) clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      func.apply(null, args);
+    }, delay);
+  };
+};
+
+export const TodoList = () => {
   const [todos, setTodos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [newTodo, setNewTodo] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isSorted, setIsSorted] = useState(false);
+  const [refreshTodosFlag, setRefreshTodosFlag] = useState(false);
+
+  const refreshTodos = () => {
+    setRefreshTodosFlag((prev) => !prev);
+  };
 
   useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/todos')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Ошибка при загрузке данных');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setTodos(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error('Ошибка:', error);
-        setError('Не удалось загрузить данные');
-        setLoading(false);
+    setIsLoading(true);
+    fetch('http://localhost:5000/todos')
+      .then((response) => response.json())
+      .then((loadedTodos) => {
+        setTodos(loadedTodos);
+        setIsLoading(false);
       });
-  }, []);
+  }, [refreshTodosFlag]);
 
-  if (loading) {
-    return <p>Загрузка...</p>;
-  }
+  const addTodo = () => {
+    setIsCreating(true);
+    fetch('http://localhost:5000/todos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: newTodo, completed: false }),
+    })
+      .then((response) => response.json())
+      .then(() => {
+        refreshTodos();
+        setNewTodo('');
+      })
+      .finally(() => setIsCreating(false));
+  };
 
-  if (error) {
-    return <p>{error}</p>;
-  }
+  const deleteTodo = (id) => {
+    setIsDeleting(true);
+    fetch(`http://localhost:5000/todos/${id}`, {
+      method: 'DELETE',
+    })
+      .then(() => {
+        refreshTodos();
+      })
+      .finally(() => setIsDeleting(false));
+  };
+
+  const toggleComplete = (id) => {
+    const todo = todos.find((todo) => todo.id === id);
+    fetch(`http://localhost:5000/todos/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...todo, completed: !todo.completed }),
+    }).then(() => {
+      refreshTodos();
+    });
+  };
+
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  // Используем debounce напрямую с handleSearch
+  const debouncedSearch = debounce(handleSearch, 300);
+
+  const filteredTodos = todos.filter((todo) =>
+    todo.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const sortedTodos = isSorted
+    ? [...filteredTodos].sort((a, b) => a.title.localeCompare(b.title))
+    : filteredTodos;
+
+  const handleSortToggle = () => {
+    setIsSorted((prev) => !prev);
+  };
 
   return (
-    <div className="todo-container">
-      <h1 className="todo-title">Список задач</h1>
-      <ul className="todo-list">
-        {todos.map((todo) => (
-          <li key={todo.id} className="todo-item">
-            {todo.title}
-          </li>
-        ))}
-      </ul>
+    <div className={styles.todoContainer}>
+      {isLoading ? (
+        <div className={styles.loader}></div>
+      ) : (
+        <>
+          <div className={styles.inputRow}>
+            <input
+              type="text"
+              value={newTodo}
+              onChange={(e) => setNewTodo(e.target.value)}
+              placeholder="Добавить новую задачу"
+            />
+            <button disabled={isCreating} onClick={addTodo}>
+              Добавить
+            </button>
+          </div>
+          <div className={styles.inputRow}>
+            <input
+              type="text"
+              placeholder="Поиск..."
+              onChange={debouncedSearch}
+            />
+            <button onClick={handleSortToggle}>
+              {isSorted ? 'Сброс' : 'Сортировать'}
+            </button>
+          </div>
+          <ul className={styles.todoList}>
+            {sortedTodos.map((todo) => (
+              <li key={todo.id} className={styles.todoItem}>
+                <span
+                  style={{
+                    textDecoration: todo.completed ? 'line-through' : 'none',
+                  }}
+                  onClick={() => toggleComplete(todo.id)}
+                >
+                  {todo.title}
+                </span>
+                <button
+                  onClick={() => deleteTodo(todo.id)}
+                  disabled={isDeleting}
+                >
+                  Удалить
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </div>
   );
 };
-
-export default TodoList;

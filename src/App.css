@@ -1,35 +1,17 @@
-/* src/TodoList.css */
-.todo-container {
-  padding: 20px;
-  max-width: 600px;
-  margin: auto;
-  background-color: #1a1a1a; /* Черный фон */
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+/* src/App.css */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #282c34;
+  color: white;
+  display: flex;
+  /* align-items: center; */
+  justify-content: center;
+  height: 100vh;
+  margin-top: 30px;
 }
 
-.todo-title {
+h1 {
   text-align: center;
-  color: #ff6600; /* Оранжевый цвет */
-  margin-bottom: 20px;
-}
-
-.todo-list {
-  list-style-type: none;
-  padding: 0;
-}
-
-.todo-item {
-  padding: 10px;
-  margin-bottom: 10px;
-  background-color: #333333; /* Темный серый для контраста */
-  border: 1px solid #ff6600; /* Оранжевая рамка */
-  border-radius: 4px;
-  color: #ffffff; /* Белый текст */
-  transition: background-color 0.3s;
-}
-
-.todo-item:hover {
-  background-color: #ff6600; /* Оранжевый фон при наведении */
-  color: #1a1a1a; /* Черный текст при наведении */
+  color: #ff6600;
 }
