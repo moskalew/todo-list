@@ -76,7 +76,6 @@ export const TodoList = () => {
     setSearchTerm(event.target.value);
   };
 
-  // Используем debounce напрямую с handleSearch
   const debouncedSearch = debounce(handleSearch, 300);
 
   const filteredTodos = todos.filter((todo) =>
@@ -93,6 +92,7 @@ export const TodoList = () => {
 
   return (
     <div className={styles.todoContainer}>
+      <h1 className={styles.todoTitle}>Список дел</h1> {/* Заголовок */}
       {isLoading ? (
         <div className={styles.loader}></div>
       ) : (
@@ -115,7 +115,7 @@ export const TodoList = () => {
               onChange={debouncedSearch}
             />
             <button onClick={handleSortToggle}>
-              {isSorted ? 'Сброс' : 'Сортировать'}
+              {isSorted ? 'Отменить' : 'Сортировать'}
             </button>
           </div>
           <ul className={styles.todoList}>

@@ -9,6 +9,11 @@
       "id": "05ff",
       "title": "Задача 2",
       "completed": false
+    },
+    {
+      "id": "f99d",
+      "title": "выдать волшебный пендель",
+      "completed": false
     }
   ]
 }
