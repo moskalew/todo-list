@@ -1,0 +1,16 @@
+{
+  "todos": {
+    "001": {
+      "title": "Новая задача 1",
+      "completed": false
+    },
+    "002": {
+      "title": "Задача 2",
+      "completed": false
+    },
+    "003": {
+      "title": "выдать волшебный пендель",
+      "completed": false
+    }
+  }
+}

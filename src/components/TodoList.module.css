@@ -1,0 +1,80 @@
+.todoContainer {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.todoTitle {
+  color: #ff8c00;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.inputRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.inputRow input {
+  padding: 10px;
+  border: 1px solid #ff8c00;
+  border-radius: 4px;
+  flex-grow: 1;
+  margin-right: 10px; /* Отступ между инпутом и кнопкой */
+  color: #ffffff; /* Цвет текста в инпуте */
+  background-color: #333333; /* Фоновый цвет инпута */
+}
+
+.inputRow button {
+  padding: 10px 15px;
+  background-color: #ff8c00; /* Оранжевый цвет кнопки */
+  color: #ffffff; /* Цвет текста кнопки */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.inputRow button:hover {
+  background-color: #e07b00; /* Темнее при наведении */
+}
+
+.todoList {
+  list-style: none;
+  padding: 0;
+}
+
+.todoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #444;
+}
+
+.todoItem span {
+  color: #ffcc00; /* Цвет текста задач */
+  cursor: pointer;
+  flex-grow: 1;
+}
+
+.todoItem span.completed {
+  color: #b8860b; /* Цвет для выполненных задач */
+  text-decoration: line-through; /* Перечеркнутый текст для выполненных задач */
+}
+
+/* Медиазапрос для отображения в колонку при ширине менее 320px */
+@media (max-width: 320px) {
+  .inputRow {
+    flex-direction: column;
+  }
+
+  .inputRow input {
+    margin-right: 0; /* Убрать отступ справа */
+    margin-bottom: 10px; /* Отступ снизу для инпутов */
+  }
+}

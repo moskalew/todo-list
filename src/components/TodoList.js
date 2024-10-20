@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import styles from './TodoList.module.css';
 
 const debounce = (func, delay) => {
@@ -14,16 +15,9 @@ const debounce = (func, delay) => {
 export const TodoList = () => {
   const [todos, setTodos] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [newTodo, setNewTodo] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [isSorted, setIsSorted] = useState(false);
-  const [refreshTodosFlag, setRefreshTodosFlag] = useState(false);
-
-  const refreshTodos = () => {
-    setRefreshTodosFlag((prev) => !prev);
-  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -33,43 +27,20 @@ export const TodoList = () => {
         setTodos(loadedTodos);
         setIsLoading(false);
       });
-  }, [refreshTodosFlag]);
+  }, []);
 
   const addTodo = () => {
-    setIsCreating(true);
     fetch('http://localhost:5000/todos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title: newTodo, completed: false }),
     })
-      .then((response) => response.json())
       .then(() => {
-        refreshTodos();
         setNewTodo('');
+        return fetch('http://localhost:5000/todos');
       })
-      .finally(() => setIsCreating(false));
-  };
-
-  const deleteTodo = (id) => {
-    setIsDeleting(true);
-    fetch(`http://localhost:5000/todos/${id}`, {
-      method: 'DELETE',
-    })
-      .then(() => {
-        refreshTodos();
-      })
-      .finally(() => setIsDeleting(false));
-  };
-
-  const toggleComplete = (id) => {
-    const todo = todos.find((todo) => todo.id === id);
-    fetch(`http://localhost:5000/todos/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...todo, completed: !todo.completed }),
-    }).then(() => {
-      refreshTodos();
-    });
+      .then((response) => response.json())
+      .then(setTodos);
   };
 
   const handleSearch = (event) => {
@@ -92,7 +63,7 @@ export const TodoList = () => {
 
   return (
     <div className={styles.todoContainer}>
-      <h1 className={styles.todoTitle}>Список дел</h1> {/* Заголовок */}
+      <h1 className={styles.todoTitle}>Список задач</h1>
       {isLoading ? (
         <div className={styles.loader}></div>
       ) : (
@@ -104,7 +75,7 @@ export const TodoList = () => {
               onChange={(e) => setNewTodo(e.target.value)}
               placeholder="Добавить новую задачу"
             />
-            <button disabled={isCreating} onClick={addTodo}>
+            <button className={styles.button} onClick={addTodo}>
               Добавить
             </button>
           </div>
@@ -114,27 +85,24 @@ export const TodoList = () => {
               placeholder="Поиск..."
               onChange={debouncedSearch}
             />
-            <button onClick={handleSortToggle}>
+            <button className={styles.button} onClick={handleSortToggle}>
               {isSorted ? 'Отменить' : 'Сортировать'}
             </button>
           </div>
           <ul className={styles.todoList}>
             {sortedTodos.map((todo) => (
               <li key={todo.id} className={styles.todoItem}>
-                <span
-                  style={{
-                    textDecoration: todo.completed ? 'line-through' : 'none',
-                  }}
-                  onClick={() => toggleComplete(todo.id)}
-                >
-                  {todo.title}
-                </span>
-                <button
-                  onClick={() => deleteTodo(todo.id)}
-                  disabled={isDeleting}
-                >
-                  Удалить
-                </button>
+                <Link to={`/task/${todo.id}`} className={styles.todoLink}>
+                  <span
+                    className={`${styles.todoText} ${
+                      todo.completed ? styles.completed : ''
+                    }`}
+                  >
+                    {todo.title.length > 30
+                      ? `${todo.title.substring(0, 30)}...`
+                      : todo.title}
+                  </span>
+                </Link>
               </li>
             ))}
           </ul>

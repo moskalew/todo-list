@@ -1,0 +1,76 @@
+.taskDetailContainer {
+  max-width: 600px; /* Максимальная ширина контейнера */
+  margin: 0 auto; /* Центрирование контейнера */
+  padding: 20px; /* Внутренний отступ */
+  background-color: #1a1a1a; /* Чёрный фон */
+  border-radius: 8px; /* Закруглённые углы */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Тень для контейнера */
+}
+
+.taskTitle {
+  color: #ff8c00; /* Оранжевый цвет заголовка */
+  text-align: center; /* Выравнивание по центру */
+  margin-bottom: 10px; /* Отступ снизу */
+}
+
+.taskDescription {
+  color: #ffffff; /* Белый цвет текста описания */
+  margin-bottom: 20px; /* Отступ снизу */
+  text-align: center; /* Выравнивание по центру */
+}
+
+.buttonRow {
+  display: flex; /* Использование flexbox для расположения кнопок */
+  justify-content: space-between; /* Пробел между кнопками */
+}
+
+.button {
+  padding: 10px 15px; /* Внутренний отступ кнопок */
+  background-color: #ff8c00; /* Оранжевый цвет кнопки */
+  color: #ffffff; /* Цвет текста кнопки */
+  border: none; /* Удаление рамки */
+  border-radius: 4px; /* Закруглённые углы */
+  cursor: pointer; /* Курсор в виде руки при наведении */
+  transition: background-color 0.3s ease; /* Плавный переход фона при наведении */
+}
+
+.button:hover {
+  background-color: #e07b00; /* Темнее при наведении */
+}
+
+.loader {
+  border: 4px solid #ff8c00; /* Оранжевая рамка загрузчика */
+  border-top: 4px solid transparent; /* Прозрачная верхняя часть */
+  border-radius: 50%; /* Круглая форма */
+  width: 40px; /* Ширина загрузчика */
+  height: 40px; /* Высота загрузчика */
+  animation: spin 1s linear infinite; /* Анимация вращения */
+  margin: 0 auto; /* Центрирование загрузчика */
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg); /* Начальное состояние */
+  }
+  100% {
+    transform: rotate(360deg); /* Конечное состояние */
+  }
+}
+
+/* Медиазапрос для отображения кнопок в колонку при ширине менее 320px */
+@media (max-width: 320px) {
+  .buttonRow {
+    flex-direction: column; /* Изменение направления на колонку */
+    align-items: center; /* Центрирование кнопок */
+  }
+
+  .button {
+    margin-bottom: 10px; /* Отступ между кнопками */
+    width: 100%; /* Ширина кнопок на 100% */
+  }
+}
+.completedButton {
+  background-color: #b8860b; /* Темнее оранжевый цвет для завершенной кнопки */
+  cursor: not-allowed; /* Курсор "нельзя" */
+  opacity: 0.6; /* Затемнение кнопки */
+}
